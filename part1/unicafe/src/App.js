@@ -28,7 +28,7 @@ const Statistics=(statsB)=>{
             <StatisticLine name="neutral" value={statsB.neutral}/>
             <StatisticLine name="bad" value={statsB.bad}/>
             <StatisticLine name="total" value={statsB.total}/>
-            <StatisticLine name="average" value={statsB.averageScore}/>
+            <StatisticLine name="average" value={(statsB.good-statsB.bad)/statsB.total}/>
             <StatisticLine name="percPos" value={statsB.percPos + "%"}/>
           </tbody>
         </table>  
@@ -43,11 +43,10 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+
   const [isClicked, setIsClicked] = useState(false)
   let total=good+neutral+bad
-  const [selected, setSelected]=useState(0)
-  const [vote, setVote]= useState(0)
-  const votes=new Uint8Array(6);
+  
 
   const getWAverage=(weightsarray, total)=>{
     const weights=weightsarray.reduce((w, i)=>{

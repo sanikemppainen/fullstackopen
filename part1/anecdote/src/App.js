@@ -1,28 +1,6 @@
 import React from 'react';
 import { useState } from 'react'
 
-const Button=(props)=>(
-  <button onClick={props.onClick}>
-    {props.text}
-  </button>
-)
-const Anecdote=(props)=>{
-  return(
-    <p>
-      {props.anecdote} : {props.votes} votes
-    </p>
-  )
-}
-const Mostvoted=(props)=>{
-  return(
-    <p>
-      Most voted anecdote is:
-      <p>
-        <Anecdote anecdote ={props.anecdote} votes={props.votes}/>
-      </p>
-    </p>
-  )
-}
 
 const App = () => {
   const [selected, setSelected] = useState(0)
@@ -36,41 +14,29 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when dianosing patients.'
   ]
-  const vote =()=>{
+  
+  const [mostvoted, setMostvoted] = useState(0)
+
+
+ const voting =()=>{
     const newtable=[...table]
     newtable[selected]+=1
     setTable(newtable)
-  }
-  const maxVote=table.reduce((a,b,c) => {
-    if(b>a.b){
-      a.b=b
-      a.c=c;
-    }return a
-    },{b:0}
-)
-  const mostvotedanecdote=anecdotes[maxVote.c]
-
-  const handleClick=(which)=>{
-    switch(which){
-      case "change":
-        setSelected(Math.floor(Math.random()*6))
-        break
-      case "vote":
-        vote()
-        break
-      default:
-        break
+    if (newtable[selected]>newtable[mostvoted]){
+      setMostvoted(selected)
     }
   }
- 
+
+  const setTo=Math.floor(Math.random()*6)
   
   return (
     <div>
       <h1>Anecdotes:</h1>
-      <Anecdote anecdote={anecdotes[selected]} votes={table[selected]}/>
-      <Button onClick={()=>handleClick("change")} text="Change anecdote"/>
-      <Button onClick={()=>handleClick("vote")} text="Vote"/>
-      <Mostvoted votes={maxVote.c} anecdote={mostvotedanecdote}/>
+      <p> {anecdotes[selected]} has {table[selected]} votes</p>
+      <button onClick={voting}> vote </button>
+      <button onClick={()=>setSelected(setTo)}>next</button>
+      <h1>anecdote with most votes</h1>
+      <p>{anecdotes[mostvoted]} has {table[mostvoted]} votes</p>
     </div>
   )
 }
