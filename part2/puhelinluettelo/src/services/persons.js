@@ -1,8 +1,8 @@
 import axios from "axios";
 
 //mistä ottaa datan on tämä url, eri url mihin näyttää
-//const url=('http://localhost:3001/api/persons')
-const url=('https://powerful-woodland-97841.herokuapp.com/api/persons')
+const url=('/api/persons')
+//const url=('https://powerful-woodland-97841.herokuapp.com/api/persons')
 
 //määrittele axios käskyt constiin
 const getAll=()=>{

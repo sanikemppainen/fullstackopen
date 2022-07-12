@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react'
+import { colgroup } from 'react/lib/ReactDOMFactories';
 
 
 const App = () => {
@@ -40,4 +41,4 @@ const App = () => {
     </div>
   )
 }
-export default App
+
