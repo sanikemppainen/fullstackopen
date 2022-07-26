@@ -7,6 +7,7 @@ require('dotenv').config()
 const getTokenFrom = request => {
   const authorization = request.get('authorization')  
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    console.log('get tokenissa', authorization.substring(7))
     return authorization.substring(7)
   }
   return null
@@ -21,24 +22,25 @@ blogsRouter.get('/', async (request, response) => {
   
 blogsRouter.post('/', async(request, response) => {
   const body=request.body
+  //ota talteen requestin token eli annettu mjono pyydön mukana
   const token = getTokenFrom(request)
  
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token missing or invalid' })  
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!decodedToken.id || !token) {
+      return response.status(401).json({ error: 'token missing or invalid !' })  
     }
  
   const user = await User.findById(decodedToken.id)
   
   //const user= request.user
-
+/*
   if (body.title === undefined || body.url === undefined) {
     return response.status(400).json({
         error: 'missing title or url'
     })
 }
   body.likes= body.likes || 0
-
+*/
   const blog= new Blog({
     title: body.title,
     author: body.author,
@@ -52,7 +54,8 @@ blogsRouter.post('/', async(request, response) => {
   user.blogs=user.blogs.concat(savedBlog._id)
   await user.save()
 
-  response.status(201).json(savedBlog)
+  //response.status(201).json(savedBlog)
+  response.json(savedBlog.toJSON())
 })
 
 //remove a blog

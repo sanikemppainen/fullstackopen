@@ -1,9 +1,12 @@
 const mongoose= require('mongoose')
 const supertest= require('supertest')
+const bcrypt = require('bcrypt')
 const helper=require('./test_helper')
 const app= require('../app')
 const api =supertest(app)
 const Blog=require('../models/blog')
+const User = require('../models/user')
+const JWT_BEARER_TOKEN='bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 
 beforeEach(async()=>{
     await Blog.deleteMany({})
@@ -112,6 +115,50 @@ test('modify a blog ', async()=>{
     const blogsAtTheEnd= await helper.blogsInDB()
     const modifiedAfter=blogsAtTheEnd.find(blog=>blog.id ===blogToModify.id)
     expect(modifiedAfter.likes).toBe(blogToModify.likes+3)
+})
+describe('when one user at database to start', ()=>{
+    beforeEach(async()=>{
+        await User.deleteMany({})
+        const pwHash= await bcrypt.hash('sekret', 10)
+        const user= new User({ username: 'root', pwHash})
+        await user.save()
+    })
+    test('creation is succesful with a new username', async()=>{
+        const usersAtFirst= await helper.usersInDB()
+        const addUser={
+            username: "uusinimi",
+            name: "uusiniminimi",
+            password: "salasana"
+        }
+        await api
+            .post("/api/users")
+            .send(addUser)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        
+        const atEnd=await helper.usersInDB()
+        //yks lisää dbssä
+        expect(atEnd).toHaveLength(usersAtFirst.length+1)
+        expect(atEnd.map(u=>u.username)).toContain(addUser.username)
+
+    })
+    test('cant create if username taken, gives 400 when tried', async()=>{
+        const usersAtFirst=await helper.usersInDB()
+        const sameNameUser={
+            username: 'root',
+            name: "erinimi",
+            password: "salasana"
+        }
+        const result=await api
+            .post("/api/users")
+            .send(sameNameUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        const atEnd=await helper.usersInDB()
+        expect(atEnd).toHaveLength(usersAtFirst.length)
+        expect(result.body.error).toContain("username already in use, try again")
+        })
 })
 
 
