@@ -1,0 +1,32 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibmltaSIsImlhdCI6MTY1ODg2MTYzMn0.eSesUmPuUTiR0vIuFnS9l9jnXlwmqeNReYHzdAkoK60
+
+{
+    "title": "title",
+    "author": "authori",
+    "url": "wwwurl"
+}
+
+###
+
+GET http://localhost:3003/api/users
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "usernimitoka",
+    "name": "vaannimitoka",
+    "password": "salas"
+}
+
+###
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "käyttäjätunnus",
+    "password": "salasana"
+}
