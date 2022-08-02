@@ -13,14 +13,30 @@ blogsRouter.get('/', async (request, response) => {
 })
   
 blogsRouter.post('/', async(request, response) => {
-  const body=request.body
-  //ota talteen requestin token eli annettu mjono pyydön mukana
-  //const token = request.token
+  console.log('post blog',request.body, request.user)
   const user= request.user
+  if (!user) {
+    return response.status(401).json({ error: 'token not correct (blogrouter)' })
+  }
+  const body=request.body
   body.likes= body.likes || 0
+  if (body.title === undefined || body.url === undefined) {
+    return response.status(400).json({
+        error: 'missing title or url'
+    })
+}  
+  const blog = new Blog({ ...request.body, user: user.id })
+  const savedBlog = await blog.save()
+
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+
+  response.status(201).json(savedBlog)
+  /*const body=request.body
+  body.likes= body.likes || 0
+  const user= request.user
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  console.log(decodedToken, request.token)
   if (!decodedToken.id) {
       return response.status(401).json({ error: 'token missing or invalid !' })  
     }
@@ -35,7 +51,7 @@ blogsRouter.post('/', async(request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes || 0,
-    user: user._id 
+    user: body.user 
   })
   
   const savedBlog= await blog.save()
@@ -44,6 +60,7 @@ blogsRouter.post('/', async(request, response) => {
   await user.save()
 
   response.status(201).json(savedBlog)
+  */
 })
 
 //remove a blog

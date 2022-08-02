@@ -36,8 +36,8 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const userExtractor=async (error, request, response, next) => {
-  const token= request.token
+const userExtractor=async (request, response, next) => {
+ /* const token= request.token
   const decodedToken= jwt.verify(token, process.env.SECRET)
   if(decodedToken.id){
 //!!!    const decodedToken= jwt.verify(token, process.env.SECRET)
@@ -46,6 +46,15 @@ const userExtractor=async (error, request, response, next) => {
   }else{
     return response.status(401).json({ error: 'token not right'})
   }
+  next()*/
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    const decodedToken = jwt.verify(authorization.substring(7), process.env.SECRET)
+    if (decodedToken) {
+      request.user = await User.findById(decodedToken.id)
+    }
+  }
+
   next()
 }
 
